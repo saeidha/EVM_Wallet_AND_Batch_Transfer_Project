@@ -28,3 +28,15 @@ Before you begin, ensure you have the following installed:
 -   npm (usually comes with Node.js)
 
 ---
+## 🚀 Setup Instructions
+
+Follow these steps to get the project running on your local machine.
+
+### 1. Clone or Download the Project
+First, get the project files into a folder on your computer.
+
+### 2. Install Dependencies
+Navigate into the project directory with your terminal and run the following command to install the necessary libraries (`ethers.js` and `dotenv`):
+
+```bash
+npm install
