@@ -95,3 +95,8 @@ const batchTransfer = async () => {
     const finalBalance = await senderWallet.getBalance();
     console.log(`💰 Sender final balance: ${ethers.utils.formatEther(finalBalance)} ETH`);
 };
+
+// --- Execute the function ---
+batchTransfer().catch(error => {
+    console.error("An unexpected error occurred:", error);
+});
