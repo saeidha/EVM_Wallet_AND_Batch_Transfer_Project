@@ -29,3 +29,26 @@ const getRecipientAddresses = () => {
     const rows = fileContent.trim().split('\n').slice(1); // Remove header and split by line
     return rows.map(row => row.split(',')[0]); // Get the address (first column)
 };
+
+/**
+ * Sends ETH to a list of addresses sequentially.
+ */
+const batchTransfer = async () => {
+    // --- 1. Input Validation ---
+    if (!MAIN_PRIVATE_KEY || !RPC_URL) {
+        console.error("🚨 Error: MAIN_PRIVATE_KEY and SEPOLIA_RPC_URL must be set in your .env file.");
+        return;
+    }
+
+    // --- 2. Setup Provider and Wallet ---
+    const provider = new ethers.providers.JsonRpcProvider(RPC_URL);
+    const senderWallet = new ethers.Wallet(MAIN_PRIVATE_KEY, provider);
+    console.log(`🏦 Using sender wallet: ${senderWallet.address}`);
+
+    const senderBalance = await senderWallet.getBalance();
+    console.log(`💰 Sender balance: ${ethers.utils.formatEther(senderBalance)} ETH`);
+
+    // --- 3. Get Recipients and Calculate Total Cost ---
+    const recipients = getRecipientAddresses();
+    const amountToSendWei = ethers.utils.parseEther(AMOUNT_TO_SEND_ETH);
+    const totalAmountToSend = amountToSendWei.mul(recipients.length);
