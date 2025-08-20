@@ -45,3 +45,14 @@
 
 ================================================================================
 */
+
+
+// ======= FILE 1: generateWallets.js =======
+
+const { ethers } = require('ethers');
+const fs = require('fs');
+
+/**
+ * @description This script generates a specified number of EVM wallets
+ * and saves their addresses and private keys to a CSV file.
+ */
