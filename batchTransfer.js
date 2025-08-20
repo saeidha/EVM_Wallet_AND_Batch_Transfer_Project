@@ -15,7 +15,7 @@ require('dotenv').config(); // Load environment variables from .env file
 const WALLETS_FILE_PATH = './wallets.csv'; // Path to the CSV file with wallet addresses.
 const AMOUNT_TO_SEND_ETH = '0.000007'; // The amount of ETH to send to each wallet.
 const MAIN_PRIVATE_KEY = process.env.MAIN_PRIVATE_KEY;
-const RPC_URL = process.env.SEPOLIA_RPC_URL; // Using Sepolia as an example
+const RPC_URL = process.env.RPC_URL; // Using Sepolia as an example
 
 /**
  * Reads wallet addresses from the CSV file.
