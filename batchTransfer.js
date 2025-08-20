@@ -61,4 +61,34 @@ const batchTransfer = async () => {
 
     console.log(`\n🚀 Starting batch transfer of ${AMOUNT_TO_SEND_ETH} ETH to ${recipients.length} addresses...`);
 
+    // --- 4. Process Transactions Sequentially ---
+    for (let i = 0; i < recipients.length; i++) {
+        const recipientAddress = recipients[i];
+        console.log(`\n--- Sending to wallet ${i + 1}/${recipients.length} ---`);
+        console.log(`   -> To: ${recipientAddress}`);
+
+        try {
+            const tx = {
+                to: recipientAddress,
+                value: amountToSendWei,
+                // You can manually set gas price for lower fees, but it's risky.
+                // Ethers.js handles this well automatically.
+                // gasPrice: ethers.utils.parseUnits('5', 'gwei'), // Example: Manually set gas price
+            };
+
+            const txResponse = await senderWallet.sendTransaction(tx);
+            console.log(`   ⏳ Transaction sent. Waiting for confirmation...`);
+            console.log(`   - Hash: ${txResponse.hash}`);
+
+            await txResponse.wait(); // Wait for the transaction to be mined
+
+            console.log(`   ✅ Success! Transaction confirmed.`);
+
+        } catch (error) {
+            console.error(`   ❌ Failed to send to ${recipientAddress}. Error: ${error.message}`);
+            // Decide if you want to stop on failure or continue
+            // For this script, we will continue to the next address.
+        }
+    }
+
    
