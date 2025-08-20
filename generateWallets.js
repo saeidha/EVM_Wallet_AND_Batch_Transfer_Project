@@ -56,3 +56,46 @@ const fs = require('fs');
  * @description This script generates a specified number of EVM wallets
  * and saves their addresses and private keys to a CSV file.
  */
+
+// --- CONFIGURATION ---
+const NUMBER_OF_WALLETS = 20; // The number of wallets you want to create.
+const FILE_PATH = './wallets.csv'; // The output file name.
+
+/**
+ * Generates wallets and saves them to a CSV file.
+ * @param {number} count - The number of wallets to generate.
+ */
+const generateWallets = (count) => {
+    console.log(`🔥 Starting wallet generation for ${count} wallets...`);
+
+    // Prepare the CSV header
+    const csvHeader = "address,privateKey\n";
+    fs.writeFileSync(FILE_PATH, csvHeader);
+
+    const wallets = [];
+    for (let i = 0; i < count; i++) {
+        // Create a new random wallet
+        const wallet = ethers.Wallet.createRandom();
+
+        const walletData = {
+            address: wallet.address,
+            privateKey: wallet.privateKey,
+        };
+        wallets.push(walletData);
+
+        // Append the new wallet to the CSV file
+        const csvLine = `${wallet.address},${wallet.privateKey}\n`;
+        fs.appendFileSync(FILE_PATH, csvLine);
+
+        // Log to console
+        console.log(`✅ Wallet ${i + 1} generated:`);
+        console.log(`   - Address: ${wallet.address}`);
+        console.log(`   - Private Key: [REDACTED FOR CONSOLE]`); // Avoid logging private keys in production
+    }
+
+    console.log(`\n🎉 Success! ${count} wallets have been generated.`);
+    console.log(`💾 Wallet details saved to: ${FILE_PATH}`);
+};
+
+// --- Execute the function ---
+generateWallets(NUMBER_OF_WALLETS);
