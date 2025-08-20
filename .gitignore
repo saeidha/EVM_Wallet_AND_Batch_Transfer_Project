@@ -1,0 +1,9 @@
+.env
+wallets.csv
+*.log
+*.tmp
+*.bak
+*.swp
+.DS_Store
+node_modules/
+dist/
