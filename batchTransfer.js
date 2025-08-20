@@ -91,4 +91,7 @@ const batchTransfer = async () => {
         }
     }
 
-   
+    console.log("\n🎉 Batch transfer process complete!");
+    const finalBalance = await senderWallet.getBalance();
+    console.log(`💰 Sender final balance: ${ethers.utils.formatEther(finalBalance)} ETH`);
+};
