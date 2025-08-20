@@ -20,3 +20,11 @@ This is particularly useful for airdrops, setting up test accounts, or distribut
 -   **Robust**: Includes error handling for file access and insufficient funds.
 
 ---
+
+## Prerequisites
+
+Before you begin, ensure you have the following installed:
+-   [Node.js](https://nodejs.org/) (version 14.x or later)
+-   npm (usually comes with Node.js)
+
+---
