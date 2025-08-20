@@ -8,3 +8,40 @@
     2. batchTransfer.js: Reads addresses from wallets.csv and sends a small amount of ETH
        to each from a main funding account.
 
+================================================================================
+
+    --- 🚨 SETUP INSTRUCTIONS 🚨 ---
+
+    1. INITIALIZE YOUR PROJECT:
+       - Create a new folder for your project.
+       - Open a terminal in that folder and run the following commands:
+         npm init -y
+         npm install ethers dotenv
+
+    2. CREATE THE SCRIPT FILES:
+       - Create a file named `generateWallets.js` and copy the first script below into it.
+       - Create a file named `batchTransfer.js` and copy the second script below into it.
+
+    3. CREATE THE .env FILE:
+       - In the same folder, create a file named `.env`
+       - This file will store your secret keys securely. Add the following lines to it,
+         replacing the placeholder values with your actual data:
+
+         # Your main wallet's private key (must have funds for transactions)
+         # IMPORTANT: Make sure this is a testnet wallet for testing!
+         MAIN_PRIVATE_KEY="0x..."
+
+         # An RPC URL for the network you want to use (e.g., Sepolia, Goerli, or Mainnet)
+         # You can get one for free from services like Infura, Alchemy, or QuickNode.
+         SEPOLIA_RPC_URL="https://sepolia.infura.io/v3/YOUR_INFURA_PROJECT_ID"
+
+
+    4. RUN THE SCRIPTS:
+       - First, run the wallet generator:
+         node generateWallets.js
+
+       - After it creates the wallets.csv file, run the transfer script:
+         node batchTransfer.js
+
+================================================================================
+*/
