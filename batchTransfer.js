@@ -52,3 +52,13 @@ const batchTransfer = async () => {
     const recipients = getRecipientAddresses();
     const amountToSendWei = ethers.utils.parseEther(AMOUNT_TO_SEND_ETH);
     const totalAmountToSend = amountToSendWei.mul(recipients.length);
+
+    if (senderBalance.lt(totalAmountToSend)) {
+        console.error("🚨 Error: Insufficient funds in the sender wallet to complete all transfers.");
+        console.error(`   - Required: ~${ethers.utils.formatEther(totalAmountToSend)} ETH + gas fees.`);
+        return;
+    }
+
+    console.log(`\n🚀 Starting batch transfer of ${AMOUNT_TO_SEND_ETH} ETH to ${recipients.length} addresses...`);
+
+   
