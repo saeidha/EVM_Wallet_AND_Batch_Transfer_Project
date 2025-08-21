@@ -84,7 +84,7 @@ async function main() {
                 }
 
                 // d. Wait for a random duration before the next wallet
-                const delay = getRandomNumber(1000, 55000); // 0.5 to 4 second
+                const delay = getRandomNumber(9000, 55000); // 0.5 to 4 second
                 console.log(`⏳ Waiting for ${delay}ms...`);
                 await sleep(delay);
             }
