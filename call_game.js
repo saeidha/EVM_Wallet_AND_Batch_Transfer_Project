@@ -57,7 +57,29 @@ async function main() {
 
                 console.log(`\n--- Processing Wallet #${i + 1}: ${wallet.address} ---`);
 
-                
+                try {
+                    // a. Select a random function to call
+                    const functionName = functionNames[getRandomNumber(0, functionNames.length - 1)];
+
+                    // b. Calculate a random payable amount
+                    const randomMultiplier = getRandomNumber(1, 10);
+                    const amountInEth = (0.0000001 * randomMultiplier).toFixed(7);
+                    const amountInWei = ethers.parseEther(amountInEth);
+
+                    console.log(`📞 Calling function "${functionName}" with ${amountInEth} ETH...`);
+
+                    // c. Send the transaction
+                    const tx = await contract[functionName]({
+                        value: amountInWei
+                    });
+                    
+                    console.log(`🧾 Transaction sent! Hash: ${tx.hash}`);
+                    await tx.wait(); // Wait for the transaction to be mined
+                    console.log(`✅ Transaction confirmed!`);
+
+                } catch (error) {
+                    console.error(`🔴 Error with wallet ${wallet.address}:`, error.reason || error.message);
+                }
 
                 // d. Wait for a random duration before the next wallet
                 const delay = getRandomNumber(500, 1000); // 0.5 to 1 second
