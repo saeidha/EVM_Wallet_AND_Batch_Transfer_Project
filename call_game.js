@@ -10,7 +10,7 @@ const contractABI = require("./abi.json"); // Load the ABI
 // List of all functions that can be called
 const functionNames = [
     'mintTokens', 'playSimpleGamble', 'playShiftedGamble', 'playHighReward',
-    'playEvenOrOdd', 'playInvertedDice', 'playJackpot', 'playMultiplier',
+    'playEvenOrOdd', 'playInvertedDice', 'playMultiplier',
     'playPowerOfTwo', 'playAllOrNothing', 'playSafeBet'
 ];
 
@@ -62,9 +62,9 @@ async function main() {
                     const functionName = functionNames[getRandomNumber(0, functionNames.length - 1)];
 
                     // b. Calculate a random payable amount
-                    const randomMultiplier = getRandomNumber(1, 10);
-                    const amountInEth = (0.0000001 * randomMultiplier).toFixed(7);
-                    const amountInWei = ethers.parseEther(amountInEth);
+                    const randomMultiplier = getRandomNumber(1, 100);
+                    const baseAmountInWei = ethers.parseEther("0.00000001");
+                    const amountInWei = baseAmountInWei * BigInt(randomMultiplier);
 
                     console.log(`📞 Calling function "${functionName}" with ${amountInEth} ETH...`);
 
@@ -82,7 +82,7 @@ async function main() {
                 }
 
                 // d. Wait for a random duration before the next wallet
-                const delay = getRandomNumber(500, 2000); // 0.5 to 1 second
+                const delay = getRandomNumber(500, 4000); // 0.5 to 4 second
                 console.log(`⏳ Waiting for ${delay}ms...`);
                 await sleep(delay);
             }
