@@ -36,3 +36,17 @@ async function main() {
 
     const provider = new ethers.JsonRpcProvider(RPC_URL);
     const wallets = [];
+
+    // 1. Read and parse the CSV file
+    fs.createReadStream("wallet.csv")
+        .pipe(csv())
+        .on("data", (row) => {
+            // Ensure the privateKey column exists and is not empty
+            if (row.privateKey) {
+                wallets.push(row.privateKey);
+            }
+        })
+        .on("end", async () => {
+            console.log(`✅ CSV file successfully processed. Found ${wallets.length} wallets.`);
+            
+           
