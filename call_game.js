@@ -49,4 +49,27 @@ async function main() {
         .on("end", async () => {
             console.log(`✅ CSV file successfully processed. Found ${wallets.length} wallets.`);
             
-           
+            // 2. Loop through each wallet and interact with the contract
+            for (let i = 0; i < wallets.length; i++) {
+                const privateKey = wallets[i];
+                const wallet = new ethers.Wallet(privateKey, provider);
+                const contract = new ethers.Contract(CONTRACT_ADDRESS, contractABI, wallet);
+
+                console.log(`\n--- Processing Wallet #${i + 1}: ${wallet.address} ---`);
+
+                
+
+                // d. Wait for a random duration before the next wallet
+                const delay = getRandomNumber(500, 1000); // 0.5 to 1 second
+                console.log(`⏳ Waiting for ${delay}ms...`);
+                await sleep(delay);
+            }
+
+            console.log("\n🎉 All wallets have been processed!");
+        });
+}
+
+main().catch((error) => {
+    console.error("An unexpected error occurred:", error);
+    process.exitCode = 1;
+});
