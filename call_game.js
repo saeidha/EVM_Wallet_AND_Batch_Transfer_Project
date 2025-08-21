@@ -69,7 +69,7 @@ async function main() {
                     // For logging purposes, convert the final Wei amount back to an ETH string
                     const amountInEth = ethers.formatEther(amountInWei);
                     console.log(`📞 Calling function "${functionName}" with ${amountInEth} ETH...`);
-                    
+
                     // c. Send the transaction
                     const tx = await contract[functionName]({
                         value: amountInWei
@@ -84,7 +84,7 @@ async function main() {
                 }
 
                 // d. Wait for a random duration before the next wallet
-                const delay = getRandomNumber(500, 4000); // 0.5 to 4 second
+                const delay = getRandomNumber(1000, 55000); // 0.5 to 4 second
                 console.log(`⏳ Waiting for ${delay}ms...`);
                 await sleep(delay);
             }
