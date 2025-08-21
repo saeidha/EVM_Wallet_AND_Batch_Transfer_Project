@@ -13,3 +13,26 @@ const functionNames = [
     'playEvenOrOdd', 'playInvertedDice', 'playJackpot', 'playMultiplier',
     'playPowerOfTwo', 'playAllOrNothing', 'playSafeBet'
 ];
+
+// --- HELPER FUNCTIONS ---
+
+// Function to generate a random number between min and max (inclusive)
+function getRandomNumber(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+// Function to create a delay
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+// --- MAIN LOGIC ---
+
+async function main() {
+    if (!RPC_URL || !CONTRACT_ADDRESS) {
+        console.error("❌ Missing RPC_URL or CONTRACT_ADDRESS in .env file");
+        return;
+    }
+
+    const provider = new ethers.JsonRpcProvider(RPC_URL);
+    const wallets = [];
