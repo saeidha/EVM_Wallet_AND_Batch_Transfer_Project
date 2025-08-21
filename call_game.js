@@ -66,8 +66,10 @@ async function main() {
                     const baseAmountInWei = ethers.parseEther("0.00000001");
                     const amountInWei = baseAmountInWei * BigInt(randomMultiplier);
 
+                    // For logging purposes, convert the final Wei amount back to an ETH string
+                    const amountInEth = ethers.formatEther(amountInWei);
                     console.log(`📞 Calling function "${functionName}" with ${amountInEth} ETH...`);
-
+                    
                     // c. Send the transaction
                     const tx = await contract[functionName]({
                         value: amountInWei
