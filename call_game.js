@@ -38,7 +38,7 @@ async function main() {
     const wallets = [];
 
     // 1. Read and parse the CSV file
-    fs.createReadStream("wallet.csv")
+    fs.createReadStream("wallets.csv")
         .pipe(csv())
         .on("data", (row) => {
             // Ensure the privateKey column exists and is not empty
