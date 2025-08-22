@@ -58,7 +58,7 @@ const fs = require('fs');
  */
 
 // --- CONFIGURATION ---
-const NUMBER_OF_WALLETS = 40; // The number of wallets you want to create.
+const NUMBER_OF_WALLETS = 25; // The number of wallets you want to create.
 const FILE_PATH = './wallets.csv'; // The output file name.
 
 /**
