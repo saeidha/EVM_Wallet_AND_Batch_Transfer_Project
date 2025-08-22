@@ -9,7 +9,7 @@ require('dotenv').config(); // Load environment variables from .env file
 
 // --- CONFIGURATION ---
 const WALLETS_FILE_PATH = './wallets.csv';
-const AMOUNT_TO_SEND_ETH = '0.0000025'; // Amount to send to each wallet 0.01
+const AMOUNT_TO_SEND_ETH = '0.0000050'; // Amount to send to each wallet 0.02
 const MAIN_PRIVATE_KEY = process.env.MAIN_PRIVATE_KEY;
 const RPC_URL = process.env.RPC_URL;
 
