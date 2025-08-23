@@ -2,7 +2,7 @@ const fs = require('fs');
 const csv = require('csv-parser');
 
 const filePath = 'wallets.csv';
-const ITERATIONS = 5;
+const ITERATIONS = 6;
 
 /**
  * Shuffles an array in place using the Fisher-Yates algorithm.
