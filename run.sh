@@ -29,7 +29,8 @@ sleep 3
 # Note: Ensure 'shuffleAndAppend.sh' is executable with 'chmod +x shuffleAndAppend.sh'
 echo "---------------------------------"
 echo "3. Running 'shuffleAndAppend.sh'..."
-./shuffleAndAppend.sh
+# ./shuffleAndAppend.sh
+node shuffleWallets.js
 echo "✅ 'shuffleAndAppend.sh' finished."
 
 # Wait for 3 seconds

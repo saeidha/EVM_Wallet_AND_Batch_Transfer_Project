@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "csv-parser": "^3.2.0",
     "ethers": "^6.15.0"
   }
 }

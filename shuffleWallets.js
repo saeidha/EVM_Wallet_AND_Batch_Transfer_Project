@@ -2,8 +2,12 @@ const fs = require('fs');
 const csv = require('csv-parser');
 
 const filePath = 'wallets.csv';
+const ITERATIONS = 5;
 
-// This function shuffles an array in place using the Fisher-Yates algorithm
+/**
+ * Shuffles an array in place using the Fisher-Yates algorithm.
+ * @param {Array} array The array to shuffle.
+ */
 function shuffleArray(array) {
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -11,47 +15,56 @@ function shuffleArray(array) {
   }
 }
 
-async function processAndShuffleCSV() {
-  const wallets = [];
+/**
+ * Reads a CSV file, then shuffles and appends its content back to the file
+ * for a specified number of iterations.
+ */
+async function shuffleAndAppend() {
+  const originalWallets = [];
 
-  console.log(`Reading wallets from "${filePath}"...`);
-
-  // 1. Read all rows from the CSV into an array
+  // 1. Read all original rows from the CSV into an array.
+  // We do this first to get a clean list before we start appending.
   fs.createReadStream(filePath)
     .pipe(csv())
     .on('data', (row) => {
-      wallets.push(row);
+      originalWallets.push(row);
     })
     .on('end', () => {
-      if (wallets.length === 0) {
+      if (originalWallets.length === 0) {
         console.error('🔴 No data found in the CSV file. Aborting.');
         return;
       }
       
-      console.log(`Found ${wallets.length} wallets. Shuffling...`);
+      console.log(`✅ Found ${originalWallets.length} original wallets. Starting shuffle and append process...`);
+      console.log("--------------------------------------------------");
 
-      // 2. Shuffle the array of wallets
-      shuffleArray(wallets);
-      console.log('✅ Wallets have been shuffled.');
+      try {
+        // 2. Loop for the specified number of iterations.
+        for (let i = 0; i < ITERATIONS; i++) {
+          console.log(`🔄 Iteration ${i + 1} of ${ITERATIONS}: Shuffling and appending...`);
 
-      // 3. Convert the shuffled data back into a CSV string
-      // Start with the header row
-      const header = Object.keys(wallets[0]).join(',');
-      // Convert each wallet object back to a comma-separated string
-      const shuffledRows = wallets.map(row => `${row.address},${row.privateKey}`);
-      
-      // Combine the header and the shuffled rows
-      const csvContent = [header, ...shuffledRows].join('\n');
+          // Create a fresh copy of the original wallets to shuffle.
+          // This ensures each shuffle is from the same original list.
+          let walletsToShuffle = [...originalWallets];
+          
+          shuffleArray(walletsToShuffle);
 
-      // 4. Write the new content back to the original file, overwriting it
-      fs.writeFile(filePath, csvContent, 'utf8', (err) => {
-        if (err) {
-          console.error('🔴 An error occurred while writing the file:', err);
-          return;
+          // 3. Convert the shuffled data back into a CSV string (without a header).
+          const shuffledRows = walletsToShuffle.map(row => `${row.address},${row.privateKey}`);
+          
+          // We add a newline at the beginning to ensure the appended data starts on a new line.
+          const csvContentToAppend = '\n' + shuffledRows.join('\n');
+
+          // 4. Append the shuffled content to the file synchronously.
+          fs.appendFileSync(filePath, csvContentToAppend, 'utf8');
         }
-        console.log(`🎉 Successfully shuffled and saved the new order to "${filePath}"!`);
-      });
+        
+        console.log("--------------------------------------------------");
+        console.log(`🎉 Success! Appended ${ITERATIONS} shuffled sets to "${filePath}"!`);
+      } catch (err) {
+        console.error('🔴 An error occurred while writing to the file:', err);
+      }
     });
 }
 
-processAndShuffleCSV();
+shuffleAndAppend();
