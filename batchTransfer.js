@@ -9,9 +9,14 @@ require('dotenv').config(); // Load environment variables from .env file
 
 // --- CONFIGURATION ---
 const WALLETS_FILE_PATH = './wallets.csv';
-const AMOUNT_TO_SEND_ETH = '0.0000025'; // Amount to send to each wallet 0.02
+const BASE_AMOUNT_TO_SEND_ETH = '0.0012'; // Amount to send to each wallet 0.02
+
 const MAIN_PRIVATE_KEY = process.env.MAIN_PRIVATE_KEY;
 const RPC_URL = process.env.RPC_URL;
+
+function getRandomNumber(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
 
 /**
  * Reads wallet addresses from the CSV file.
@@ -36,33 +41,29 @@ const batchTransfer = async () => {
         return;
     }
 
-    // --- 2. Setup Provider and Wallet ---
     const provider = new ethers.JsonRpcProvider(RPC_URL);
     const senderWallet = new ethers.Wallet(MAIN_PRIVATE_KEY, provider);
     console.log(`🏦 Using sender wallet: ${senderWallet.address}`);
 
-    const senderBalance = await provider.getBalance(senderWallet.address); // <-- UPDATED
+    const senderBalance = await provider.getBalance(senderWallet.address);
     console.log(`💰 Sender balance: ${ethers.formatEther(senderBalance)} ETH`);
 
-    // --- 3. Get Recipients and Calculate Total Cost ---
     const recipients = getRecipientAddresses();
-    const amountToSendWei = ethers.parseEther(AMOUNT_TO_SEND_ETH);
-    const totalAmountToSend = amountToSendWei * BigInt(recipients.length);
 
-    if (senderBalance < totalAmountToSend) {
-        console.error("🚨 Error: Insufficient funds in the sender wallet.");
-        console.error(`   - Required: ~${ethers.formatEther(totalAmountToSend)} ETH + gas fees.`);
-        return;
-    }
-
-    console.log(`\n🚀 Starting batch transfer of ${AMOUNT_TO_SEND_ETH} ETH to ${recipients.length} addresses...`);
+    console.log(`\n🚀 Starting batch transfer to ${recipients.length} addresses...`);
 
     // --- 4. Process Transactions Sequentially ---
     for (let i = 0; i < recipients.length; i++) {
-        const recipientAddress = recipients[i];
+                const recipientAddress = recipients[i];
+
+        // --- Calculate random extra ---
+        const randomExtra = getRandomNumber(1, 9) * 0.00001; // between 0.00001 and 0.00009
+        const finalAmountEth = (parseFloat(BASE_AMOUNT_TO_SEND_ETH) + randomExtra).toFixed(8); // keep precision
+        const amountToSendWei = ethers.parseEther(finalAmountEth);
+
         console.log(`\n--- Sending to wallet ${i + 1}/${recipients.length} ---`);
         console.log(`   -> To: ${recipientAddress}`);
-
+        console.log(`   -> Amount: ${finalAmountEth} ETH`);
         try {
             const tx = {
                 to: recipientAddress,

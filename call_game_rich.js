@@ -1,0 +1,124 @@
+const { ethers } = require("ethers");
+const fs = require("fs");
+const csv = require("csv-parser");
+require("dotenv").config();
+
+// --- CONFIGURATION ---
+const { RPC_URL, CONTRACT_ADDRESS } = process.env;
+const contractABI = require("./abi.json"); // Load the ABI
+
+// List of all functions that can be called
+const functionNames = [
+    'mintTokens', 'playSimpleGamble', 'playShiftedGamble', 'playHighReward',
+    'playEvenOrOdd', 'playInvertedDice', 'playMultiplier',
+    'playPowerOfTwo', 'playAllOrNothing', 'playSafeBet'
+];
+
+// --- HELPER FUNCTIONS ---
+
+// Function to generate a random number between min and max (inclusive)
+function getRandomNumber(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+// Function to create a delay
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+// --- MAIN LOGIC ---
+
+async function main() {
+    if (!RPC_URL || !CONTRACT_ADDRESS) {
+        console.error("❌ Missing RPC_URL or CONTRACT_ADDRESS in .env file");
+        return;
+    }
+
+    const provider = new ethers.JsonRpcProvider(RPC_URL);
+    const wallets = [];
+
+    // 1. Read and parse the CSV file
+    fs.createReadStream("wallets.csv")
+        .pipe(csv())
+        .on("data", (row) => {
+            // Ensure the privateKey column exists and is not empty
+            if (row.privateKey) {
+                wallets.push(row.privateKey);
+            }
+        })
+        .on("end", async () => {
+            console.log(`✅ CSV file successfully processed. Found ${wallets.length} wallets.`);
+            
+            // 2. Loop through each wallet and interact with the contract
+            for (let i = 0; i < wallets.length; i++) {
+                const privateKey = wallets[i];
+                const wallet = new ethers.Wallet(privateKey, provider);
+                const contract = new ethers.Contract(CONTRACT_ADDRESS, contractABI, wallet);
+
+                console.log(`\n--- Processing Wallet #${i + 1}: ${wallet.address} ---`);
+
+                try {
+
+                     // a. Check wallet balance
+                    const balanceWei = await provider.getBalance(wallet.address);
+                    const balanceEth = ethers.formatEther(balanceWei);
+                    console.log(`💰 Wallet balance: ${balanceEth} ETH`);
+
+
+
+                    let amountInWei;
+
+                    const maxAmount = "0.001"; // Set a maximum limit to avoid excessive spending
+                    if (balanceWei > ethers.parseEther(maxAmount)) {
+                        // Random multiplier logic + add 0.001
+                        const randomMultiplier = getRandomNumber(1, 100);
+                        const baseAmountInWei = ethers.parseEther("0.0000001");
+                        amountInWei = baseAmountInWei * BigInt(randomMultiplier) + ethers.parseEther(maxAmount);
+                        console.log(`📊 Balance > "${maxAmount}" ETH → sending random + "${maxAmount}" ETH`);
+                    } else {
+                        // All balance minus 0.00000004
+                        const buffer = ethers.parseEther("0.00000007");
+                        if (balanceWei > buffer) {
+                            amountInWei = balanceWei - buffer;
+                            console.log(`📊 Balance <= "${maxAmount}" ETH → sending nearly all balance (minus buffer)`);
+                        } else {
+                            console.log(`⚠️ Balance too low to send (less than buffer). Skipping...`);
+                            continue;
+                        }
+                    }
+
+
+                    // a. Select a random function to call
+                    const functionName = functionNames[getRandomNumber(0, functionNames.length - 1)];
+                    // For logging purposes, convert the final Wei amount back to an ETH string
+                    const amountInEth = ethers.formatEther(amountInWei);
+
+                    console.log(`📞 Calling function "${functionName}" with ${amountInEth} ETH...`);
+                    
+                    // c. Send the transaction
+                    const tx = await contract[functionName]({
+                        value: amountInWei
+                    });
+                    
+                    console.log(`🧾 Transaction sent! Hash: ${tx.hash}`);
+                    await tx.wait(); // Wait for the transaction to be mined
+                    console.log(`✅ Transaction confirmed!`);
+
+                } catch (error) {
+                    console.error(`🔴 Error with wallet ${wallet.address}:`, error.reason || error.message);
+                }
+
+                // d. Wait for a random duration before the next wallet
+                const delay = getRandomNumber(900, 4400); // 0.9 to 4 second
+                console.log(`⏳ Waiting for ${delay}ms...`);
+                await sleep(delay);
+            }
+
+            console.log("\n🎉 All wallets have been processed!");
+        });
+}
+
+main().catch((error) => {
+    console.error("An unexpected error occurred:", error);
+    process.exitCode = 1;
+});
