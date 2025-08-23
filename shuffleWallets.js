@@ -44,7 +44,6 @@ async function shuffleAndAppend() {
           console.log(`🔄 Iteration ${i + 1} of ${ITERATIONS}: Shuffling and appending...`);
 
           // Create a fresh copy of the original wallets to shuffle.
-          // This ensures each shuffle is from the same original list.
           let walletsToShuffle = [...originalWallets];
           
           shuffleArray(walletsToShuffle);
@@ -52,8 +51,15 @@ async function shuffleAndAppend() {
           // 3. Convert the shuffled data back into a CSV string (without a header).
           const shuffledRows = walletsToShuffle.map(row => `${row.address},${row.privateKey}`);
           
-          // We add a newline at the beginning to ensure the appended data starts on a new line.
-          const csvContentToAppend = '\n' + shuffledRows.join('\n');
+          // The content to append is just the joined rows. A newline is added before it
+          // to ensure it starts on a new line in the file.
+          let csvContentToAppend =  '';
+          if (i === 0) {
+            csvContentToAppend =  shuffledRows.join('\n');
+          }else{
+            csvContentToAppend = '\n' + shuffledRows.join('\n');
+          }
+          
 
           // 4. Append the shuffled content to the file synchronously.
           fs.appendFileSync(filePath, csvContentToAppend, 'utf8');
